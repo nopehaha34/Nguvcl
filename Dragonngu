@@ -322,7 +322,7 @@ Tab:AddToggle({
                 Time = 5
             })
 
-            task.delay(11.5, function()
+            task.delay(35.5, function()
                 if not Value then return end
 
                 pcall(function()
@@ -395,7 +395,7 @@ Tab2:AddToggle({
                 Time = 5
             })
 
-            task.delay(25, function()
+            task.delay(35.5, function()
                 if not Value then return end
 
                 pcall(function()
