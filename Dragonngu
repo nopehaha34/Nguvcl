@@ -1,0 +1,775 @@
+local TARGET_PLACEID = 119538320626412
+
+-- ==================== WHITELIST (Duyệt người dùng) ====================
+local Whitelist = {
+    "concubi99",          -- Thay bằng tên của bạn
+    "gamenhudb103",
+    "utrir8",
+    -- Thêm tên người được phép dùng vào đây, mỗi tên cách nhau bằng dấu phẩy
+}
+
+local function IsWhitelisted(username)
+    for _, name in ipairs(Whitelist) do
+        if name == username then
+            return true
+        end
+    end
+    return false
+end
+
+-- ==================== KIỂM TRA PLACEID TRƯỚC ====================
+if game.PlaceId ~= TARGET_PLACEID then
+    warn("Script chỉ hoạt động ở PlaceId: " .. TARGET_PLACEID)
+    return
+end
+
+-- ==================== KIỂM TRA WHITELIST ====================
+local LocalPlayer = game.Players.LocalPlayer
+
+if not IsWhitelisted(LocalPlayer.Name) then
+    OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/duysira5/Hehe/refs/heads/main/Orion.lua.txt"))()  -- Load tạm để hiện notify
+    
+    OrionLib:MakeNotification({
+        Name = "WHITELIST",
+        Content = "Bạn không có trong danh sách duyệt!\nBú cái lon 👅",
+        Time = 10
+    })
+    
+    task.wait(3)
+    return  -- Dừng hoàn toàn script, không hiện Orion UI
+end
+
+print("✅ Whitelist Passed | User: " .. LocalPlayer.Name .. " → Đang load Orion...")
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/duysira5/Hehe/refs/heads/main/Orion.lua.txt"))()
+
+local Window = OrionLib:MakeWindow({
+    Name = "Auto Dungeon",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "DungeonAuto"
+})
+
+local Tab = Window:MakeTab({
+    Name = "Main",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+local Tab2 = Window:MakeTab({
+    Name = "Settings ⚙️",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Biến global
+_G.AutoEnergyBall = true
+_G.AutoHealDestroy = true
+_G.AutoPlay = true
+_G.AntiDie = true
+_G.AutoPlayAgain = true      -- hoặc Auto Chơi tiếp
+_G.AutoLockAtom = true
+_G.AutoExecuteOnRejoin = false   -- mặc định tắt để tránh loop không mong muốn
+
+--------------------------------------------------
+-- Auto Energy Ball
+Tab:AddToggle({
+    Name = "Auto Energy Ball",
+    Default = true,
+    Flag = "AutoEnergyBall",
+    Callback = function(Value)
+        _G.AutoEnergyBall = Value
+        spawn(function()
+            while _G.AutoEnergyBall do
+                local args = {{
+                    Camera = CFrame.new(-490.83349609375,1433.6324462890625,13.601478576660156,-0.8191119432449341,0.2532392144203186,-0.5147092938423157,0.0000040084123611450195,0.8972810506820679,0.4414598047733307,0.5736338496208191,0.36160293221473694,-0.7349746227264404),
+                    SkillId = "101",
+                    Began = true,
+                    CFrame = CFrame.new(-483.5724182128906,1426.7720947265625,17.557615280151367,-0.8183580636978149,0.2593553960323334,-0.5128594636917114,0.00005722745117964223,0.892418384552002,0.45120880007743835,0.5747086405754089,0.369221031665802,-0.7303326725959778),
+                    ["Typ\208\181"] = 1,
+                    Aim = vector.create(-398.53533935546875,1395.5396728515625,152.9746856689453)
+                }}
+                game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("SkillRemote"):FireServer(unpack(args))
+                task.wait(0.001)
+            end
+        end)
+    end
+})
+
+--------------------------------------------------
+-- Auto Heal Damage Destroy
+Tab:AddToggle({
+    Name = "Auto Heal Damage Destroy",
+    Default = true,
+    Flag = "AutoHealDestroy",
+    Callback = function(Value)
+        _G.AutoHealDestroy = Value
+        spawn(function()
+            while _G.AutoHealDestroy do
+                local args = {{
+                    Camera = CFrame.new(-450.9184875488281,1428.680419921875,12.428024291992188,1.1920928955078125e-07,0.9987169504165649,0.05064040422439575,0.032363444566726685,-0.0506138801574707,0.9981937408447266,0.9994761347770691,0.001638859510421753,-0.032321929931640625),
+                    SkillId = "108",
+                    ["Typ\208\181"] = 1,
+                    Began = true,
+                    CFrame = CFrame.new(-453.92352294921875,1418.59521484375,9.422234535217285,3.886523458618285e-08,0.9987169504165649,0.05064040422439575,0.032363444566726685,-0.050613876432180405,0.9981938004493713,0.9994761943817139,0.0016388590447604656,-0.03232192248106003),
+                    Target = workspace:WaitForChild("World Map"):WaitForChild("Cell Max Arena Venue"):WaitForChild("Atom Max Arena"):WaitForChild("Arena"):WaitForChild("Model"):WaitForChild("Circle.017"),
+                    Aim = vector.create(-454.3009948730469,1362.0074462890625,14.586920738220215)
+                }}
+                game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("SkillRemote"):FireServer(unpack(args))
+                task.wait(1)
+            end
+        end)
+    end
+})
+
+--------------------------------------------------
+-- Auto Play (Next Area)
+Tab:AddToggle({
+    Name = "Auto Play (Next Area)",
+    Default = true,
+    Flag = "AutoPlay",
+    Callback = function(Value)
+        _G.AutoPlay = Value
+        spawn(function()
+            while _G.AutoPlay do
+                local args = {true}
+                pcall(function()
+                    workspace:WaitForChild("Dungeon"):WaitForChild("Stages"):WaitForChild("0"):WaitForChild("NextArea"):WaitForChild("DungeonNextAreaPad"):WaitForChild("RE"):WaitForChild("Interact"):FireServer(unpack(args))
+                end)
+                task.wait(0.55)
+            end
+        end)
+    end
+})
+
+--------------------------------------------------
+-- Anti die easy-Hard
+Tab2:AddToggle({
+    Name = "Anti die easy-Hard",
+    Default = true,
+    Callback = function(v)
+        getgenv().AntiDie = v
+        spawn(function()
+            while getgenv().AntiDie do
+                task.wait()
+                local char = game.Players.LocalPlayer.Character
+                if char and char:FindFirstChild("HumanoidRootPart") then
+                    char.HumanoidRootPart.CFrame = CFrame.new(-429.531372,1405.6228,61.5958328)
+                    char.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+                end
+            end
+        end)
+    end
+})
+
+--------------------------------------------------
+-- Auto Play Again / Chơi tiếp
+Tab:AddToggle({
+    Name = "Auto Play Again éo sài đc",
+    Default = true,
+    Callback = function(v)
+        getgenv().AutoPlayAgain = v
+        spawn(function()
+            while getgenv().AutoPlayAgain do
+                task.wait(1)
+                for _, ui in pairs(game:GetDescendants()) do
+                    if ui:IsA("TextButton") or ui:IsA("TextLabel") then
+                        local text = ui.Text:lower()
+                        if text:find("play again") or text:find("chơi tiếp") then
+                            for i = 1, 5 do
+                                pcall(function()
+                                    if ui.Activate then ui:Activate() end
+                                    if ui.MouseButton1Click then ui.MouseButton1Click:Fire() end
+                                end)
+                                task.wait(5555555)
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    end
+})
+
+--------------------------------------------------
+-- Auto Lock Atom
+Tab:AddToggle({
+    Name = "Auto Lock Atom",
+    Default = true,
+    Callback = function(v)
+        getgenv().AutoLockAtom = v
+        spawn(function()
+            local locked = false
+            while getgenv().AutoLockAtom do
+                task.wait(1.2)
+                local atom = workspace:FindFirstChild("World Mobs")
+                if atom then atom = atom:FindFirstChild("Event Mobs") end
+                if atom then atom = atom:FindFirstChild("Atom Max") end
+                
+                if atom and not locked then
+                    pcall(function()
+                        game:GetService("ReplicatedStorage")
+                            .Packages._Index["sleitnick_knit@1.4.7"]
+                            .knit.Services.SkillManager.RE.LockedOnChanged
+                            :FireServer(atom)
+                    end)
+                    locked = true
+                end
+                
+                if not atom then
+                    locked = false
+                end
+            end
+        end)
+    end
+})
+
+--------------------------------------------------
+-- Nút Auto Execute khi rejoin / hop server
+Tab2:AddToggle({
+    Name = "Auto Execute khi rejoin/hop",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoExecuteOnRejoin = Value
+        
+        if Value then
+            local HttpService = game:GetService("HttpService")
+            local placeId = game.PlaceId
+            local jobId = game.JobId
+            
+            local data = {
+                PlaceId = placeId,
+                JobId = jobId,
+                Timestamp = os.time()
+            }
+            
+            local success, encoded = pcall(function()
+                return HttpService:JSONEncode(data)
+            end)
+            
+            if success then
+                writefile("autoexec_dungeon.json", encoded)
+            end
+        end
+    end
+})
+spawn(function()
+    local HttpService = game:GetService("HttpService")
+    
+    if isfile and isfile("autoexec_dungeon.json") then
+        local success, content = pcall(function()
+            return readfile("autoexec_dungeon.json")
+        end)
+        
+        if success then
+            local data = HttpService:JSONDecode(content)
+            
+            -- Kiểm tra có phải cùng game không
+            if data.PlaceId == game.PlaceId then
+                -- Xoá file cũ để tránh loop vô hạn
+                delfile("autoexec_dungeon.json")
+                
+                -- Chờ load game xong một chút
+                task.wait(4.5)
+                
+                -- Execute lại script (bạn thay bằng cách load script chính của bạn)
+                loadstring(game:HttpGet("đường_dẫn_script_của_bạn.lua"))()
+                -- Hoặc nếu script nằm trong pastebin/raw github thì dùng:
+                -- loadstring(game:HttpGet("https://raw.githubusercontent.com/.../main/script.lua"))()
+                
+                OrionLib:MakeNotification({
+                    Name = "Auto Execute",
+                    Content = "Đã tự động bật lại script sau khi rejoin/hop!",
+                    Time = 6
+                })
+            end
+        end
+    end
+end)
+
+OrionLib:Init()
+
+-- Biến điều khiển
+local AutoSkillFired = false
+local AutoPlayAgainEnabled = true
+
+-- ────────────────────────────────────────────────
+--              AUTO SKILL (chỉ 1 lần sau 25s)
+-- ────────────────────────────────────────────────
+local skillArgs = {
+    {
+        Camera = CFrame.new(-423.306640625, 1355.865478515625, -240.69577026367188, -1, 0, 0, 0, 0.9659258127212524, 0.258819043636322, 0, 0.258819043636322, -0.9659258127212524),
+        SkillId = "10",
+        Began = true,
+        CFrame = CFrame.new(-423.306640625, 1351.1903076171875, -228.6217041015625, -1, 0, 0, 0, 1, 0, 0, 0, -1),
+        ["Typ\208\181"] = 1,
+        Aim = vector.create(-423.306640625, 1351.1903076171875, -178.6217041015625)
+    }
+}
+
+Tab:AddToggle({
+    Name = "Auto Skill (bắn 1 lần sau 25s)",
+    Default = true,
+    Callback = function(Value)
+        if Value then
+            if AutoSkillFired then
+                OrionLib:MakeNotification({Name = "Auto Skill", Content = "Đã bắn skill 1 lần rồi, toggle lại nếu muốn bắn lần mới", Time = 4})
+                return
+            end
+
+            OrionLib:MakeNotification({
+                Name = "Auto Skill",
+                Content = "Đã bật - sẽ bắn skill sau 25 giây...",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+
+            task.delay(11.5, function()
+                if not Value then return end
+
+                pcall(function()
+                    game:GetService("ReplicatedStorage")
+                        :WaitForChild("Remotes")
+                        :WaitForChild("SkillRemote")
+                        :FireServer(unpack(skillArgs))
+                end)
+
+                AutoSkillFired = true
+                OrionLib:MakeNotification({
+                    Name = "Auto Skill",
+                    Content = "ĐÃ BẮN SKILL XONG (1 lần duy nhất)",
+                    Time = 5
+                })
+            end)
+        else
+            OrionLib:MakeNotification({
+                Name = "Auto Skill",
+                Content = "Đã tắt toggle",
+                Time = 3
+            })
+        end
+    end    
+})
+
+-- ────────────────────────────────────────────────
+--      AUTO PLAY AGAIN (đợi 20s spawn + chỉ khi Atom Max chết)
+-- ────────────────────────────────────────────────
+
+
+-- Biến điều khiển
+local AutoSkillFired = true
+local AutoPlayAgainEnabled = true
+
+-- Lưu JobId hiện tại (server ban đầu khi script load)
+local currentJobId = game.JobId
+local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- ────────────────────────────────────────────────
+--              AUTO SKILL (chỉ 1 lần sau 25s)
+-- ────────────────────────────────────────────────
+local skillArgs = {
+    {
+        Camera = CFrame.new(-423.306640625, 1355.865478515625, -240.69577026367188, -1, 0, 0, 0, 0.9659258127212524, 0.258819043636322, 0, 0.258819043636322, -0.9659258127212524),
+        SkillId = "10",
+        Began = true,
+        CFrame = CFrame.new(-423.306640625, 1351.1903076171875, -228.6217041015625, -1, 0, 0, 0, 1, 0, 0, 0, -1),
+        ["Typ\208\181"] = 1,
+        Aim = vector.create(-423.306640625, 1351.1903076171875, -178.6217041015625)
+    }
+}
+
+Tab2:AddToggle({
+    Name = "Auto Skill (bắn 1 lần sau 25s)",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            if AutoSkillFired then
+                OrionLib:MakeNotification({Name = "Auto Skill", Content = "Đã bắn skill 1 lần rồi, toggle lại nếu muốn bắn lần mới", Time = 4})
+                return
+            end
+
+            OrionLib:MakeNotification({
+                Name = "Auto Skill",
+                Content = "Đã bật - sẽ bắn skill sau 25 giây...",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+
+            task.delay(25, function()
+                if not Value then return end
+
+                pcall(function()
+                    game:GetService("ReplicatedStorage")
+                        :WaitForChild("Remotes")
+                        :WaitForChild("SkillRemote")
+                        :FireServer(unpack(skillArgs))
+                end)
+
+                AutoSkillFired = true
+                OrionLib:MakeNotification({
+                    Name = "Auto Skill",
+                    Content = "ĐÃ BẮN SKILL XONG (1 lần duy nhất)",
+                    Time = 5
+                })
+            end)
+        else
+            OrionLib:MakeNotification({
+                Name = "Auto Skill",
+                Content = "Đã tắt toggle",
+                Time = 3
+            })
+        end
+    end    
+})
+
+-- ────────────────────────────────────────────────
+-- AUTO PLAY AGAIN (đợi 20s spawn + Atom chết + 6s + REJOIN nếu vẫn cùng server)
+-- ────────────────────────────────────────────────
+Tab:AddToggle({
+    Name = "Auto Play Again (đợi 20s + Atom chết + Rejoin nếu vẫn cũ)",
+    Default = true,
+    Callback = function(Value)
+        AutoPlayAgainEnabled = Value
+        if Value then
+            spawn(function()
+                while AutoPlayAgainEnabled do
+                    -- Đợi 20 giây để Atom Max spawn
+                    task.wait(20)
+
+                    -- Tìm mob Atom Max
+                    local worldMobs = workspace:FindFirstChild("World Mobs")
+                    local eventMobs = worldMobs and worldMobs:FindFirstChild("Event Mobs")
+                    local atomMax = eventMobs and eventMobs:FindFirstChild("Atom Max")
+
+                    local isDead = false
+                    if atomMax and atomMax:FindFirstChild("Humanoid") then
+                        if atomMax.Humanoid.Health <= 0 then
+                            isDead = true
+                        end
+                    else
+                        isDead = true  -- Không tồn tại → coi như chết
+                    end
+
+                    if isDead then
+                        OrionLib:MakeNotification({
+                            Name = "Auto Play Again",
+                            Content = "Atom Max đã chết! Đợi 6 giây rồi Play Again...",
+                            Time = 4
+                        })
+
+                        task.wait(6)
+
+                        pcall(function()
+                            local args = {true}
+                            game:GetService("ReplicatedStorage")
+                                :WaitForChild("Packages")
+                                :WaitForChild("_Index")
+                                :WaitForChild("sleitnick_knit@1.4.7")
+                                :WaitForChild("knit")
+                                :WaitForChild("Services")
+                                :WaitForChild("DungeonService")
+                                :WaitForChild("RF")
+                                :WaitForChild("TogglePlayAgain")
+                                :InvokeServer(unpack(args))
+                        end)
+
+                        OrionLib:MakeNotification({
+                            Name = "Auto Play Again",
+                            Content = "ĐÃ PLAY AGAIN! Kiểm tra server... Nếu vẫn trong server cũ → REJOIN ngay để refresh!",
+                            Time = 5
+                        })
+
+                        -- Đợi một chút để Play Again xử lý (thường đẩy người chơi sang server mới hoặc refresh)
+                        task.wait(5)  -- Tăng lên 5s để chắc chắn game đã xử lý Play Again
+
+                        -- Kiểm tra JobId hiện tại so với JobId ban đầu
+                        if game.JobId == currentJobId then
+                            -- Vẫn đang ở server cũ → force rejoin để refresh (reset trạng thái round)
+                            OrionLib:MakeNotification({
+                                Name = "Rejoin",
+                                Content = "Vẫn trong server cũ → Đang REJOIN để refresh round mới...",
+                                Time = 6
+                            })
+
+                            pcall(function()
+                                TeleportService:TeleportToPlaceInstance(game.PlaceId, currentJobId, LocalPlayer)
+                            end)
+                        else
+                            -- Đã bị đẩy sang server mới → không cần rejoin nữa (hoặc có thể thêm logic khác nếu muốn)
+                            OrionLib:MakeNotification({
+                                Name = "Rejoin",
+                                Content = "Play Again đã đẩy sang server mới → Không cần rejoin!",
+                                Time = 5
+                            })
+                        end
+
+                        task.wait(9)  -- Tránh loop quá nhanh
+                    else
+                        task.wait(1)  -- Boss chưa chết, check lại sau 1s
+                    end
+                end
+            end)
+
+            OrionLib:MakeNotification({
+                Name = "Auto Play Again",
+                Content = "Đã bật - Sau Play Again: Nếu vẫn cùng server → tự động REJOIN để refresh",
+                Time = 6
+            })
+        else
+            OrionLib:MakeNotification({Name = "Auto Play Again", Content = "Đã tắt", Time = 3})
+        end
+    end    
+})
+
+-- Thông báo load
+OrionLib:MakeNotification({
+    Name = "Loaded",
+    Content = "Auto Skill (1 lần sau 25s) + Auto Play Again (20s spawn + Atom chết + 6s) + REJOIN nếu vẫn cùng server sau Play Again",
+    Time = 8
+})
+
+
+-- Thông báo load
+OrionLib:MakeNotification({
+    Name = "Loaded",
+    Content = "Auto Skill (1 lần sau 25s) + Auto Play Again (đợi 20s spawn + Atom chết + 6s)",
+    Time = 8
+})
+
+Tab:AddButton({
+    Name = "Destroy GUI",
+    Callback = function()
+        OrionLib:Destroy()
+    end    
+})
+
+
+-- Biến điều khiển
+local Skill9Fired = true
+local AutoEnergyEnabled = true
+local isCharging = true
+
+-- ==================== SKILL 9 (1 lần duy nhất) ====================
+local skill9Args = {{
+    Camera = CFrame.new(-428.1038818359375, 1410.113037109375, 57.0250358581543, -0.9545319676399231, -0.16015979647636414, 0.25143128633499146, 0, 0.8434213399887085, 0.5372528433799744, -0.2981087863445282, 0.5128250122070312, -0.805072546005249),
+    SkillId = "9",
+    Toggle = true,
+    Began = true,
+    CFrame = CFrame.new(-429.5313720703125, 1405.622802734375, 61.59583282470703, 1, 0, 0, 0, 1, 0, 0, 0, 1),
+    ["Typ\208\181"] = 1,
+    Aim = vector.create(-429.5313720703125, 1405.622802734375, 11.595832824707031)
+}}
+Tab:AddToggle({
+    Name = "Bắn Skill 9 (1 lần duy nhất)",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            if Skill9Fired then
+                OrionLib:MakeNotification({Name = "Skill 9", Content = "Đã bắn rồi! Tắt rồi bật lại nếu muốn bắn lần mới", Time = 4})
+                return
+            end
+
+            OrionLib:MakeNotification({Name = "Skill 9", Content = "Đang bắn Skill 9 ngay lập tức...",
+             Time = 3})
+            pcall(function()
+                game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("SkillRemote"):FireServer(unpack(skill9Args))
+            end)
+            Skill9Fired = true
+            OrionLib:MakeNotification({Name = "Skill 9", Content = "ĐÃ BẮN SKILL 9 XONG (1 lần duy nhất)", Time = 5})
+        end
+    end
+})
+
+-- ==================== AUTO NĂNG LƯỢNG (Skill 2) ====================
+local chargeArgs = {{
+    Camera = CFrame.new(640.8154907226562, 595.626708984375, -148.8031768798828, 0.11027960479259491, -0.5082231163978577, 0.8541357517242432, 0, 0.8593774437904358, 0.5113419890403748, -0.9939006567001343, -0.05639059096574783, 0.09477180242538452),
+    SkillId = "2",
+    Began = true,
+    CFrame = CFrame.new(630.1387939453125, 587.794921875, -149.98782348632812, 0.04668610915541649, 8.873144707877145e-08, 0.998909592628479, 2.047253389036996e-08, 1, -8.978513221791218e-08, -0.998909592628479, 2.464192938589349e-08, 0.04668610915541649),
+    ["Typ\208\181"] = 1,
+    Aim = vector.create(580.1932983398438, 587.794921875, -152.32212829589844)
+}}
+
+local releaseArgs = {{
+    Camera = CFrame.new(640.8154907226562, 595.626708984375, -148.8031768798828, 0.11027960479259491, -0.5082231163978577, 0.8541357517242432, 0, 0.8593774437904358, 0.5113419890403748, -0.9939006567001343, -0.05639059096574783, 0.09477180242538452),
+    SkillId = "2",
+    Began = false,
+    CFrame = CFrame.new(630.1387939453125, 587.794921875, -149.98782348632812, 0.04668611288070679, 0, 0.9989096522331238, 0, 1, 0, -0.9989096522331238, 0, 0.04668611288070679),
+    ["Typ\208\181"] = 1,
+    Aim = vector.create(633.9636840820312, 584.97509765625, -140.55264282226562)
+}}
+
+Tab:AddToggle({
+    Name = "Auto Năng Lượng (Skill 2)",
+    Default = true,
+    Callback = function(Value)
+        AutoEnergyEnabled = Value
+        isCharging = false
+
+        if Value then
+            OrionLib:MakeNotification({Name = "Auto Năng Lượng", Content = "Đã bật - Tự động hồi khi năng lượng ≤ 1000", Time = 5})
+
+            spawn(function()
+                while AutoEnergyEnabled do
+                    local character = workspace.Characters:FindFirstChild("concubi99")
+                    if not character then 
+                        task.wait(1) 
+                        continue 
+                    end
+                    
+                    local status = character:FindFirstChild("Status")
+                    local energy = status and status:FindFirstChild("CurrentEnergy")
+                    
+                    if energy then
+                        local currentEnergy = energy.Value
+
+                        -- Nếu năng lượng thấp → BẮT ĐẦU hồi
+                        if currentEnergy <= 1000 and not isCharging then
+                            pcall(function()
+                                game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("SkillRemote"):FireServer(unpack(chargeArgs))
+                            end)
+                            isCharging = true
+                            OrionLib:MakeNotification({Name = "Energy", Content = "Năng lượng thấp → Đang hồi (Skill 2 Began=true)", Time = 3})
+
+                            -- Theo dõi xem năng lượng có tăng không (check 8 lần ~4 giây)
+                            local lastEnergy = currentEnergy
+                            local noIncreaseCount = 0
+
+                            for i = 1, 8 do
+                                task.wait(0.5)
+                                if not AutoEnergyEnabled or not isCharging then break end
+
+                                local now = energy.Value
+                                if now <= lastEnergy + 20 then  -- tăng rất ít hoặc không tăng
+                                    noIncreaseCount = noIncreaseCount + 1
+                                    if noIncreaseCount >= 4 then  -- ~2 giây không tăng → THẢ SKILL
+                                        pcall(function()
+                                            game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("SkillRemote"):FireServer(unpack(releaseArgs))
+                                        end)
+                                        isCharging = false
+                                        OrionLib:MakeNotification({Name = "Energy", Content = "Năng lượng không tăng nữa → Đã thả Skill 2", Time = 3})
+                                        break
+                                    end
+                                else
+                                    noIncreaseCount = 0
+                                    lastEnergy = now
+                                end
+                            end
+
+                            -- Nếu hết thời gian vẫn đang charge thì force thả
+                            if isCharging then
+                                pcall(function()
+                                    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("SkillRemote"):FireServer(unpack(releaseArgs))
+                                end)
+                                isCharging = false
+                            end
+                        end
+                    end
+                    task.wait(0.8)  -- tránh lag
+                end
+            end)
+        else
+            -- Tắt toggle → thả skill nếu đang charge
+            if isCharging then
+                pcall(function()
+                    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("SkillRemote"):FireServer(unpack(releaseArgs))
+                end)
+                isCharging = false
+            end
+            OrionLib:MakeNotification({Name = "Auto Năng Lượng", Content = "Đã tắt", Time = 3})
+        end
+    end
+})
+
+
+-- Thông báo load
+OrionLib:MakeNotification({
+    Name = "Loaded",
+    Content = "Skill 9 (1 lần) + Auto Năng Lượng (tự động hồi + thả khi không tăng)",
+    Time = 6
+})
+local AutoEnergyEnabled = false
+local isCharging = false
+
+Tab2:AddToggle({
+    Name = "Auto Năng Lượng 1000⚙️",
+    Default = true,
+    Callback = function(Value)
+        AutoEnergyEnabled = Value
+        isCharging = false
+
+        if Value then
+            OrionLib:MakeNotification({Name = "Auto Năng Lượng", Content = "Đã bật - Tự động hồi khi năng lượng ≤ 1000", Time = 5})
+
+            spawn(function()
+                while AutoEnergyEnabled do
+                    local player = game.Players.LocalPlayer
+                    local character = player.Character
+                    if not character then 
+                        task.wait(1) 
+                        continue 
+                    end
+                    
+                    local status = character:FindFirstChild("Status")
+                    local energy = status and status:FindFirstChild("CurrentEnergy")
+                    
+                    if energy then
+                        local currentEnergy = energy.Value
+
+                        -- Nếu năng lượng thấp → BẮT ĐẦU hồi
+                        if currentEnergy <= 1000 and not isCharging then
+                            pcall(function()
+                                game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("SkillRemote"):FireServer(unpack(chargeArgs))
+                            end)
+                            isCharging = true
+                            OrionLib:MakeNotification({Name = "Energy", Content = "Năng lượng thấp → Đang hồi (Skill 2 Began=true)", Time = 3})
+
+                            -- Theo dõi xem năng lượng có tăng không (check 8 lần ~4 giây)
+                            local lastEnergy = currentEnergy
+                            local noIncreaseCount = 0
+
+                            for i = 1, 8 do
+                                task.wait(0.5)
+                                if not AutoEnergyEnabled or not isCharging then break end
+
+                                local now = energy.Value
+                                if now <= lastEnergy + 20 then  -- tăng rất ít hoặc không tăng
+                                    noIncreaseCount = noIncreaseCount + 1
+                                    if noIncreaseCount >= 4 then  -- ~2 giây không tăng → THẢ SKILL
+                                        pcall(function()
+                                            game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("SkillRemote"):FireServer(unpack(releaseArgs))
+                                        end)
+                                        isCharging = false
+                                        OrionLib:MakeNotification({Name = "Energy", Content = "Năng lượng không tăng nữa → Đã thả Skill 2", Time = 3})
+                                        break
+                                    end
+                                else
+                                    noIncreaseCount = 0
+                                    lastEnergy = now
+                                end
+                            end
+
+                            -- Nếu hết thời gian vẫn đang charge thì force thả
+                            if isCharging then
+                                pcall(function()
+                                    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("SkillRemote"):FireServer(unpack(releaseArgs))
+                                end)
+                                isCharging = false
+                            end
+                        end
+                    end
+                    task.wait(0.8)
+                end
+            end)
+        else
+            -- Tắt toggle → thả skill nếu đang charge
+            if isCharging then
+                pcall(function()
+                    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("SkillRemote"):FireServer(unpack(releaseArgs))
+                end)
+                isCharging = false
+            end
+            OrionLib:MakeNotification({Name = "Auto Năng Lượng", Content = "Đã tắt", Time = 3})
+        end
+    end
+})
