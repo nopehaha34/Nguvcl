@@ -2,7 +2,7 @@ local TARGET_PLACEID = 119538320626412
 
 -- ==================== WHITELIST (Duyệt người dùng) ====================
 local Whitelist = {
-    "concubi99",          -- Thay bằng tên của bạn
+    "duysira5",          -- Thay bằng tên của bạn
     "gamenhudb103",
     "utrir8",
     -- Thêm tên người được phép dùng vào đây, mỗi tên cách nhau bằng dấu phẩy
