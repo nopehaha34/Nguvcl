@@ -4,7 +4,7 @@ local TARGET_PLACEID = 119538320626412
 local Whitelist = {
     "utrir8",          -- Thay bằng tên của bạn
     "gamenhudb103",
-    "Utrir8",
+    "toibingu111",
     -- Thêm tên người được phép dùng vào đây, mỗi tên cách nhau bằng dấu phẩy
 }
 
